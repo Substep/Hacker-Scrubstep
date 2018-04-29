@@ -42,6 +42,8 @@ client.on('presenceUpdate', (OldMember, NewMember) => {
 
 //A simple help command
 client.on("message", (message) => {
+  if (message.author.bot) return; // this blocks the bot from responding to other bots
+  if (message.channel.type === "dm") return; // this prevents dm commands
   if (!message.content.startsWith(config.prefix) || message.author.bot) return;
 
   if (message.content.toLowerCase().startsWith(config.prefix + "help")) {
@@ -73,6 +75,8 @@ client.on("message", (message) => {
 
 //Tells you your ping to the bot
 client.on("message", (message) => {
+  if (message.author.bot) return; // this blocks the bot from responding to other bots
+  if (message.channel.type === "dm") return; // this prevents dm commands
   if (!message.content.startsWith(config.prefix) || message.author.bot) return;
 
   if (message.content.toLowerCase().startsWith(config.prefix + "ping")) {
@@ -94,6 +98,8 @@ client.on("message", (message) => {
 
 //Changes the prefix of the bot
 client.on("message", (message) => {
+  if (message.author.bot) return; // this blocks the bot from responding to other bots
+  if (message.channel.type === "dm") return; // this prevents dm commands
   if (!message.content.startsWith(config.prefix) || message.author.bot) return;
 
   if(message.content.startsWith(config.prefix + "prefix")) {
