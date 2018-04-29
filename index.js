@@ -27,7 +27,7 @@ client.on('ready', () => {
     });
 });
 
-//Gives/Removes the role with the id when playing/quitting Warframe
+//Gives/Removes the role with the id when playing/quitting MINDNIGHT
 client.on('presenceUpdate', (OldMember, NewMember) => {
     if (NewMember.presence.game != null && NewMember.presence.game.name == "MINDNIGHT") {
         NewMember.addRole('439954976018530325').catch(console.error);
