@@ -1,5 +1,5 @@
 {
-  "name": "SubstepsBot",
+  "name": "SubstepsHackerBot",
   "version": "1.0.0",
   "description": "Substep's Discord Bot on Personal Server",
   "main": "index.js",
@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Substep/Cephalon-Scrubstep"
+    "url": "git+https://github.com/Substep/Hacker-Scrubstep"
   },
   "keywords": [
     "heroku",
@@ -22,9 +22,9 @@
   "author": "Substep",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Substep/Cephalon-Scrubstep/issues"
+    "url": "https://github.com/Substep/Hacker-Scrubstep/issues"
   },
-  "homepage": "https://github.com/Substep/Cephalon-Scrubstep/blob/master/README.md",
+  "homepage": "https://github.com/Substep/Hacker-Scrubstep/blob/master/README.md",
   "dependencies": {
     "discord.js": "^11.3.2"
   }

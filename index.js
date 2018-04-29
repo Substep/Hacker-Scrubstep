@@ -7,7 +7,7 @@ const fs = require("fs")
 
 //Sets the activity of the bot
 client.on('ready', () => {
-  client.user.setActivity('Fashionframe | ' + config.prefix + 'help', {type: 'PLAYING'});
+  client.user.setActivity('Hackernight | ' + config.prefix + 'help', {type: 'PLAYING'});
 
 //Sends message into the channel with the id that bot has started
   client.channels.get('439819029797142538').send({
