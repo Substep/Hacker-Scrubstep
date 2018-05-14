@@ -16,7 +16,6 @@
     "url": "git+https://github.com/Substep/Hacker-Scrubstep"
   },
   "keywords": [
-    "heroku",
     "discord.js"
   ],
   "author": "Substep",
@@ -26,6 +25,7 @@
   },
   "homepage": "https://github.com/Substep/Hacker-Scrubstep/blob/master/README.md",
   "dependencies": {
-    "discord.js": "^11.3.2"
+    "discord.js": "^11.3.2",
+    "snekfetch": "^4.0.0"
   }
 }

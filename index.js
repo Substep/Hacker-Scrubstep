@@ -1,5 +1,6 @@
 // Discord.js bot
 const Discord = require("discord.js");
+const snekfetch = require("snekfetch")
 const client = new Discord.Client();
 const newUsers = new Discord.Collection();
 const config = require("./config.json");
@@ -40,107 +41,16 @@ client.on('presenceUpdate', (OldMember, NewMember) => {
     }
 });
 
-//Warframe role adder
-client.on("message", (message) => {
-  if (message.author.bot) return; // this blocks the bot from responding to other bots
-  if (message.channel.type === "dm") return; // this prevents dm commands
-  if (!message.content.startsWith(config.prefix) || message.author.bot) return;
+client.on("message", async message => {
+
+  if(message.author.bot) return;
+
+  if(message.content.indexOf(config.prefix) !== 0) return;
+
+  const args = message.content.slice(config.prefix.length).trim().split(/ +/g);
+  const command = args.shift().toLowerCase();
   
-  if (message.content.toLowerCase().startsWith(config.prefix + "addrole warframe") && (!message.member.roles.has('439895350799630346'))) {
-    message.react('✅')
-    message.channel.send({
-      embed: {
-        "color": 49663,
-        "footer": {
-          "icon_url": client.user.avatarURL,
-          "text": client.user.username
-        },
-        "fields": [{
-          "name": "Success!",
-          "value": "Added to Warframe role."
-        }]
-      }
-    })
-     .then(msg => {
-      msg.delete(5000)
-    message.member.addRole('439895350799630346').catch(console.error);
-  })
-  }
-  else if (message.content.toLowerCase().startsWith(config.prefix + "addrole warframe") && (message.member.roles.has('439895350799630346'))) {
-    message.react('❌')
-    message.channel.send({
-      embed: {
-        "color": 16711680,
-        "footer": {
-          "icon_url": client.user.avatarURL,
-          "text": client.user.username
-        },
-        "fields": [{
-          "name": "Error!",
-          "value": "You already have that role. Try " + config.prefix + "removerole warframe"
-        }]
-      }
-    })
-     .then(msg => {
-      msg.delete(5000).catch(console.error);
-        })
-  }
-});
-
-//Warframe role remover
-client.on("message", (message) => {
-  if (message.author.bot) return; // this blocks the bot from responding to other bots
-  if (message.channel.type === "dm") return; // this prevents dm commands
-  if (!message.content.startsWith(config.prefix) || message.author.bot) return;
-  
-  if (message.content.toLowerCase().startsWith(config.prefix + "removerole warframe") && (message.member.roles.has('439895350799630346'))) {
-    message.react('✅')
-    message.channel.send({
-      embed: {
-        "color": 49663,
-        "footer": {
-          "icon_url": client.user.avatarURL,
-          "text": client.user.username
-        },
-        "fields": [{
-          "name": "Success!",
-          "value": "Removed from Warframe role."
-        }]
-      }
-    })
-     .then(msg => {
-      msg.delete(5000)
-    message.member.removeRole('439895350799630346').catch(console.error);
-  })
-  }
-  else if (message.content.toLowerCase().startsWith(config.prefix + "removerole warframe") && (!message.member.roles.has('439895350799630346'))) {
-    message.react('❌')
-    message.channel.send({
-      embed: {
-        "color": 16711680,
-        "footer": {
-          "icon_url": client.user.avatarURL,
-          "text": client.user.username
-        },
-        "fields": [{
-          "name": "Error!",
-          "value": "You don't have that role. Try " + config.prefix + "addrole warframe"
-        }]
-      }
-    })
-     .then(msg => {
-      msg.delete(5000).catch(console.error);
-        })
-  }
-});
-
-//A simple help command
-client.on("message", (message) => {
-  if (message.author.bot) return; // this blocks the bot from responding to other bots
-  if (message.channel.type === "dm") return; // this prevents dm commands
-  if (!message.content.startsWith(config.prefix) || message.author.bot) return;
-
-  if (message.content.toLowerCase().startsWith(config.prefix + "help")) {
+  if(command === "help") {
     message.channel.send({
       embed: {
     "title": "Commands",
@@ -161,9 +71,288 @@ client.on("message", (message) => {
       {
         "name": config.prefix + "prefix",
         "value": "Changes the bots prefix to specified prefix."
+      },
+      {
+        "name": config.prefix + "roles",
+        "value": "Shows you all addable/removable roles."
+      },
+      {
+        "name": config.prefix + "addrole",
+        "value": "Gives you a certain role."
+      },
+      {
+        "name": config.prefix + "removerole",
+        "value": "Removes a certain role."
         }]
       }
     });
+  }
+  if(command === "roles") {
+    message.channel.send({
+      embed: {
+    "title": "Self-Assignable Roles",
+    "color": 49663,
+    "footer": {
+      "icon_url": client.user.avatarURL,
+      "text": client.user.username
+    },
+    "fields": [
+      {
+        "name": "Warframe",
+        "value": "Role for Warframe."
+        }]
+      }
+    });
+  }
+  if (command === "addrole") {
+    let role = args[0];
+    if(!role)
+    message.react('❌'),
+    message.channel.send({
+      embed: {
+        "color": 16711680,
+        "footer": {
+          "icon_url": client.user.avatarURL,
+          "text": client.user.username
+        },
+        "fields": [{
+          "name": "Error!",
+          "value": "Please specify a role."
+        }]
+      }
+    });
+    let aRole = message.guild.roles.find(`name`, role);
+    if(!aRole) {
+    message.react('❌'),
+    message.channel.send({
+      embed: {
+        "color": 16711680,
+        "footer": {
+          "icon_url": client.user.avatarURL,
+          "text": client.user.username
+        },
+        "fields": [{
+          "name": "Error!",
+          "value": "That role does not exist."
+        }]
+      }
+    });
+    }
+    else if(message.member.roles.has(aRole.id)) {
+    message.react('❌'),
+    message.channel.send({
+      embed: {
+        "color": 16711680,
+        "footer": {
+          "icon_url": client.user.avatarURL,
+          "text": client.user.username
+        },
+        "fields": [{
+          "name": "Error!",
+          "value": "You already have that role."
+        }]
+      }
+    });
+    }
+    if(role != "Warframe") {
+    message.react('❌'),
+    message.channel.send({
+      embed: {
+        "color": 16711680,
+        "footer": {
+          "icon_url": client.user.avatarURL,
+          "text": client.user.username
+        },
+        "fields": [{
+          "name": "Error!",
+          "value": "You can't add yourself to this role."
+        }]
+      }
+    });
+    }
+    else if(!message.member.roles.has(aRole.id)) {
+    message.react('✅'),
+    message.channel.send({
+      embed: {
+        "color": 49663,
+        "footer": {
+          "icon_url": client.user.avatarURL,
+          "text": client.user.username
+        },
+        "fields": [{
+          "name": "Success!",
+          "value": `Added to ${role} role.`
+        }]
+      }
+    });
+    message.member.addRole(aRole.id).catch(console.error);
+  }
+  }
+  if (command === "removerole") {
+    let role = args[0]
+    if(!role)
+    message.react('❌'),
+    message.channel.send({
+      embed: {
+        "color": 16711680,
+        "footer": {
+          "icon_url": client.user.avatarURL,
+          "text": client.user.username
+        },
+        "fields": [{
+          "name": "Error!",
+          "value": "Please specify a role."
+        }]
+      }
+    });
+    let aRole = message.guild.roles.find(`name`, role);
+    if(!aRole)
+    message.react('❌'),
+    message.channel.send({
+      embed: {
+        "color": 16711680,
+        "footer": {
+          "icon_url": client.user.avatarURL,
+          "text": client.user.username
+        },
+        "fields": [{
+          "name": "Error!",
+          "value": "That role does not exist."
+        }]
+      }
+    });
+    if(!message.member.roles.has(aRole.id))
+    message.react('❌'),
+    message.channel.send({
+      embed: {
+        "color": 16711680,
+        "footer": {
+          "icon_url": client.user.avatarURL,
+          "text": client.user.username
+        },
+        "fields": [{
+          "name": "Error!",
+          "value": "You do not have that role."
+        }]
+      }
+    });
+    if(message.member.roles.has(aRole.id))
+    message.react('✅'),
+    message.channel.send({
+      embed: {
+        "color": 49663,
+        "footer": {
+          "icon_url": client.user.avatarURL,
+          "text": client.user.username
+        },
+        "fields": [{
+          "name": "Success!",
+          "value": `Removed ${role} role.`
+        }]
+      }
+    })
+    message.member.removeRole(aRole.id).catch(console.error);
+  }
+  if (message.content.toLowerCase().startsWith(config.prefix + "baro")) {
+  const api = "https://api.warframestat.us/pc"
+    snekfetch.get(api).then(r => {
+    var voidTrader = r.body.voidTrader
+    var voidstart = voidTrader.startString.replace(/40s/, "")
+  if (voidTrader.active != true)
+    message.channel.send({embed: {
+    color: 49663,
+    author: {
+      name: voidTrader.character,
+    },
+    "footer": {
+      "icon_url": client.user.avatarURL,
+      "text": client.user.username
+    },
+    title: "Location:",
+    description: voidTrader.location,
+    fields: [{
+        name: "Arrival:",
+        value: voidstart
+      }]
+  }
+                           });
+  else if (voidTrader.active == true)
+    message.channel.send({embed: {
+    color: 49663,
+    author: {
+      name: voidTrader.character,
+    },
+    "footer": {
+      "icon_url": client.user.avatarURL,
+      "text": client.user.username
+    },
+    title: "Location:",
+    description: voidTrader.location,
+    fields: [
+    {
+        name: "Expiration:",
+        value: voidTrader.endString
+    },
+    {
+    	  name: "Inventory:",
+      	value: voidTrader.inventory
+    }
+      ]
+  }
+                           });
+                           })
+                            }
+});
+
+//Sends a oof gif when someone starts a message with "oof"
+client.on("message", (message) => {
+  if (message.author.bot) return; // this blocks the bot from responding to other bots
+  if (message.channel.type === "dm") return; // this prevents dm commands
+  if (message.content.toLowerCase().startsWith("oof")) {
+    message.channel.send({
+      embed: {
+        "color": 2588365,
+        "image": {
+        "url": "https://media1.tenor.com/images/68b4a3e2a4bded23f88bba28223c81a1/tenor.gif"
+    },
+        },
+    });
+  }
+});
+
+//I am a noob
+client.on('message', (message) => {
+  if (message.author.bot) return; // this blocks the bot from responding to other bots
+  if (message.channel.type === "dm") return; // this prevents dm commands
+  if (message.content.toLowerCase().startsWith("i am")) {
+    var message1 = "Hello";
+    var message2 = ", my name is Scrubstep.";
+    var name = message.content.replace(/i am/gi, "");
+    message.channel.send(message1 + name + message2);
+  }
+});
+
+//Im a noob
+client.on('message', (message) => {
+  if (message.author.bot) return; // this blocks the bot from responding to other bots
+  if (message.channel.type === "dm") return; // this prevents dm commands
+  if (message.content.toLowerCase().startsWith("im")) {
+    var message1 = "Hello";
+    var message2 = ", my name is Scrubstep.";
+    var name = message.content.replace(/im/gi, "");
+    message.channel.send(message1 + name + message2);
+  }
+});
+
+//I'm a noob
+client.on('message', (message) => {
+  if (message.author.bot) return; // this blocks the bot from responding to other bots
+  if (message.channel.type === "dm") return; // this prevents dm commands
+  if (message.content.toLowerCase().startsWith("i'm")) {
+    var message1 = "Hello";
+    var message2 = ", my name is Scrubstep.";
+    var name = message.content.replace(/i'm/gi, "");
+    message.channel.send(message1 + name + message2);
   }
 });
 
@@ -197,7 +386,7 @@ client.on("message", (message) => {
   if (!message.content.startsWith(config.prefix) || message.author.bot) return;
   if (message.author.id !== config.ownerID) return message.channel.send({
       embed: {
-        "color": 49663,
+        "color": 16711680,
         "footer": {
           "icon_url": client.user.avatarURL,
           "text": client.user.username
